@@ -1,11 +1,11 @@
 // Server side C/C++ program to demonstrate Socket programming
 
+#include <arpa/inet.h>
 #include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
-#include <netinet/in.h>
 #include <string.h>
 #include <pwd.h>
 
