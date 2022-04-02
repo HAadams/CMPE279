@@ -1,2 +1,4 @@
-# CMPE279
-This repo contains homework for CMPE279
+# Assignment 1
+
+#### Contributers
+- Hussein Adams
