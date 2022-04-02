@@ -1,11 +1,13 @@
 // Server side C/C++ program to demonstrate Socket programming
 
+#include <sys/wait.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <pwd.h>
 
 #define PORT 8080
 int main(int argc, char const *argv[])
@@ -14,7 +16,7 @@ int main(int argc, char const *argv[])
     struct sockaddr_in address;
     int opt = 1;
     int addrlen = sizeof(address);
-    char buffer[1024] = {0};
+    char buffer[102] = {0};
     char *hello = "Hello from server";
 
     // Show ASLR
@@ -56,9 +58,28 @@ int main(int argc, char const *argv[])
         perror("accept");
         exit(EXIT_FAILURE);
     }
-    valread = read( new_socket , buffer, 1024);
-    printf("%s\n",buffer );
-    send(new_socket , hello , strlen(hello) , 0 );
-    printf("Hello message sent\n");
+
+    // create a child process to handle communications with client
+    pid_t pid = fork();
+    int status;
+    // child process
+    if(pid == 0) {
+
+        setuid(getpwnam("nobody")->pw_uid);
+
+        valread = read( new_socket , buffer, 1024);
+        printf("%s\n",buffer );
+        send(new_socket , hello , strlen(hello) , 0 );
+        printf("Hello message sent\n");
+
+    // failed to create child process
+    } else if(pid < 0) {
+       printf("Error creating child process!");
+       return 0;
+
+    // parent should wait for child
+    } else {
+        int ret_code = waitpid(pid, &status, 0);
+    }
     return 0;
 }
