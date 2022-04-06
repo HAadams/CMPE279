@@ -14,12 +14,17 @@ int main(int argc, char const *argv[])
 {
     int argc0 = argc;
     char **argv0 = argv;
-    main_app();
-    
+
+    if(argc == 1)
+        main_app(argc, argv);
+    else if(argc == 3 && argv[1] == "-P" && argv[2] == "client_listener")
+        printf("%s", "CHILD RUNNING");
+        //client_listener(0);
+
     return 0;
 }
 
-void main_app() {
+void main_app(int argc, char const *argv[]) {
 
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
@@ -75,10 +80,16 @@ void main_app() {
     if(pid == 0) {
         
         client_listener(new_socket);
+        char **child_args[3];
+        child_args[0] = argv[0];
+        child_args[1] = "-P";
+        child_args[2] = "client_listener";
+
+        execv(argv[0], child_args);
 
     // failed to create child process
     } else if(pid < 0) {
-       printf("Error creating child process!");
+       fatal("Error creating child process!");
        return 0;
 
     // parent should wait for child
