@@ -10,14 +10,16 @@
 #include <pwd.h>
 
 #define PORT 8080
+void main_app(int argc, char const *argv[]);
+void client_listener(int new_socket);
+
 int main(int argc, char const *argv[])
 {
-    int argc0 = argc;
-    char **argv0 = argv;
+
 
     if(argc == 1)
         main_app(argc, argv);
-    else if(argc == 3 && argv[1] == "-P" && argv[2] == "client_listener")
+    else if(argc == 2 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0)
         printf("%s", "CHILD RUNNING");
         //client_listener(0);
 
@@ -79,18 +81,17 @@ void main_app(int argc, char const *argv[]) {
     // child process
     if(pid == 0) {
         
-        client_listener(new_socket);
-        char **child_args[3];
-        child_args[0] = argv[0];
-        child_args[1] = "-P";
-        child_args[2] = "client_listener";
+//        client_listener(new_socket);
+        char *child_args[2];
+        child_args[0] = "-P";
+        child_args[1] = "client_listener";
 
         execv(argv[0], child_args);
 
     // failed to create child process
     } else if(pid < 0) {
-       fatal("Error creating child process!");
-       return 0;
+       perror("Error creating child process!");
+       exit(EXIT_FAILURE);
 
     // parent should wait for child
     } else {
