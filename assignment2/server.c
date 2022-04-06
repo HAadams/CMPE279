@@ -75,13 +75,17 @@ void main_app(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+
+    if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, PF_UNSPEC, pipe_child) == -1) {
+        perror("socketpair failed");
+    }
+
     // create a child process to handle communications with client
     pid_t pid = fork();
     int status;
     // child process
     if(pid == 0) {
         
-//        client_listener(new_socket);
         char *child_args[2];
         child_args[0] = "-P";
         child_args[1] = "client_listener";
@@ -95,17 +99,20 @@ void main_app(int argc, char const *argv[]) {
 
     // parent should wait for child
     } else {
+        write(pipe_child[1], pipe_child[1], sizeof(int));
         int ret_code = waitpid(pid, &status, 0);
     }
 
 
 }
-void client_listener(int new_socket) {
+void client_listener(int parent_socket) {
 
     int valread;
     char *hello = "Hello from server";
     char buffer[102] = {0};
+    int new_socket;
 
+    new_socket = read(parent_socket, &new_socket, sizeof(int));
     setuid(getpwnam("nobody")->pw_uid);
 
     valread = read( new_socket , buffer, 1024);
