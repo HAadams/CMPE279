@@ -19,8 +19,11 @@ int main(int argc, char const *argv[])
 
     if(argc == 1)
         main_app(argc, argv);
-    else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0)
-        client_listener(argv[2]);
+    else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
+        printf("%s", "In Child Process!\n");
+        client_listener(atoi(argv[2]));
+    }
+        
 
     return 0;
 }
@@ -83,7 +86,7 @@ void main_app(int argc, char const *argv[]) {
         char *child_args[3];
         child_args[0] = "-P";
         child_args[1] = "client_listener";
-        child_args[2] = new_socket;
+        child_args[2] = (char)new_socket;
 
         execv(argv[0], child_args);
 
