@@ -75,7 +75,7 @@ void main_app(int argc, char const *argv[]) {
     }
 
     //int cc = new_socket;
-    char new_socket_str [2];
+    char new_socket_str [20];
     sprintf(new_socket_str, "%d", new_socket);
 
 
