@@ -19,9 +19,8 @@ int main(int argc, char const *argv[])
 
     if(argc == 1)
         main_app(argc, argv);
-    else if(argc == 2 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0)
-        printf("%s", "CHILD RUNNING");
-        //client_listener(0);
+    else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0)
+        client_listener(argv[2]);
 
     return 0;
 }
@@ -86,9 +85,10 @@ void main_app(int argc, char const *argv[]) {
     // child process
     if(pid == 0) {
         
-        char *child_args[2];
+        char *child_args[3];
         child_args[0] = "-P";
         child_args[1] = "client_listener";
+        child_args[2] = new_socket;
 
         execv(argv[0], child_args);
 
@@ -105,14 +105,12 @@ void main_app(int argc, char const *argv[]) {
 
 
 }
-void client_listener(int parent_socket) {
+void client_listener(int new_socket) {
 
     int valread;
     char *hello = "Hello from server";
     char buffer[102] = {0};
-    int new_socket;
 
-    new_socket = read(parent_socket, &new_socket, sizeof(int));
     setuid(getpwnam("nobody")->pw_uid);
 
     valread = read( new_socket , buffer, 1024);
