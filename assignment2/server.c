@@ -20,8 +20,8 @@ int main(int argc, char const *argv[])
     if(argc == 1)
         main_app(argc, argv);
     else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
-        printf("%s %s", "In Child Process!", argv[2]);
-        client_listener(atoi(argv[2]));
+        printf("%s %d", "In Child Process!", argv[2][0]);
+        client_listener(argv[2][0]);
     }
         
 
@@ -79,8 +79,6 @@ void main_app(int argc, char const *argv[]) {
 
     // create a child process to handle communications with client
     pid_t pid = fork();
-    char* fd;
-    *fd = ((char)new_socket);
     int status;
     // child process
     if(pid == 0) {
@@ -88,7 +86,7 @@ void main_app(int argc, char const *argv[]) {
         char *child_args[3];
         child_args[0] = "-P";
         child_args[1] = "client_listener";
-        child_args[2] = fd;
+        child_args[2] = new_socket;
 
         execv(argv[0], child_args);
 
