@@ -15,15 +15,12 @@ void client_listener(int new_socket);
 
 int main(int argc, char const *argv[])
 {
-
-
     if(argc == 1)
         main_app(argc, argv);
-    else if(argc == 2 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
-        printf("%s", "In Child Process!");
-        // client_listener(0);
+    else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
+        client_listener(atoi(argv[2]));
     }
-        
+
 
     return 0;
 }
@@ -36,7 +33,7 @@ void main_app(int argc, char const *argv[]) {
     int addrlen = sizeof(address);
     char buffer[102] = {0};
     char *hello = "Hello from server";
-    
+
     // Show ASLR
     printf("execve=0x%p\n", execve);
 
@@ -77,17 +74,26 @@ void main_app(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    //int cc = new_socket;
+    char new_socket_str [2];
+    sprintf(new_socket_str, "%d", new_socket);
+
+
     // create a child process to handle communications with client
     pid_t pid = fork();
     int status;
     // child process
     if(pid == 0) {
-        
-        char *child_args[3];
+
+        char *child_args[4]; // = {NULL, "-P", "client_listener", "4", NULL};
+
         child_args[0] = "-P";
         child_args[1] = "client_listener";
+        child_args[2] = new_socket_str;
+        child_args[3] = NULL;
 
-        execv(argv[0], child_args);
+        execvp(argv[0], child_args);
+	printf("Error in execv");
 
     // failed to create child process
     } else if(pid < 0) {
