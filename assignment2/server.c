@@ -19,9 +19,9 @@ int main(int argc, char const *argv[])
 
     if(argc == 1)
         main_app(argc, argv);
-    else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
-        printf("%s %d", "In Child Process!", argv[2][0]);
-        client_listener(argv[2][0]);
+    else if(argc == 2 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
+        printf("%s", "In Child Process!");
+        // client_listener(0);
     }
         
 
@@ -36,7 +36,7 @@ void main_app(int argc, char const *argv[]) {
     int addrlen = sizeof(address);
     char buffer[102] = {0};
     char *hello = "Hello from server";
-    int pipe_child[2];
+    
     // Show ASLR
     printf("execve=0x%p\n", execve);
 
@@ -86,7 +86,6 @@ void main_app(int argc, char const *argv[]) {
         char *child_args[3];
         child_args[0] = "-P";
         child_args[1] = "client_listener";
-        child_args[2] = new_socket;
 
         execv(argv[0], child_args);
 
