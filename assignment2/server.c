@@ -74,11 +74,6 @@ void main_app(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-
-    if (socketpair(AF_UNIX, SOCK_STREAM | SOCK_CLOEXEC, PF_UNSPEC, pipe_child) == -1) {
-        perror("socketpair failed");
-    }
-
     // create a child process to handle communications with client
     pid_t pid = fork();
     int status;
@@ -99,7 +94,6 @@ void main_app(int argc, char const *argv[]) {
 
     // parent should wait for child
     } else {
-        write(pipe_child[1], pipe_child[1], sizeof(int));
         int ret_code = waitpid(pid, &status, 0);
     }
 
