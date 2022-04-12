@@ -10,13 +10,13 @@
 #include <pwd.h>
 
 #define PORT 8080
-void main_app(int argc, char const *argv[]);
+void setup_socket(int argc, char const *argv[]);
 void client_listener(int new_socket);
 
 int main(int argc, char const *argv[])
 {
     if(argc == 1)
-        main_app(argc, argv);
+        setup_socket(argc, argv);
     else if(argc == 3 && strcmp("-P", argv[0]) == 0 && strcmp("client_listener", argv[1]) == 0) {
         client_listener(atoi(argv[2]));
     }
@@ -25,7 +25,7 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-void main_app(int argc, char const *argv[]) {
+void setup_socket(int argc, char const *argv[]) {
 
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
@@ -85,7 +85,7 @@ void main_app(int argc, char const *argv[]) {
     // child process
     if(pid == 0) {
 
-        char *child_args[4]; // = {NULL, "-P", "client_listener", "4", NULL};
+        char *child_args[4];
 
         child_args[0] = "-P";
         child_args[1] = "client_listener";
@@ -93,7 +93,7 @@ void main_app(int argc, char const *argv[]) {
         child_args[3] = NULL;
 
         execvp(argv[0], child_args);
-	printf("Error in execv");
+	    perror("Error in execv");
 
     // failed to create child process
     } else if(pid < 0) {
@@ -113,6 +113,7 @@ void client_listener(int new_socket) {
     char *hello = "Hello from server";
     char buffer[102] = {0};
 
+    chroot('/tmp');
     setuid(getpwnam("nobody")->pw_uid);
 
     valread = read( new_socket , buffer, 1024);
