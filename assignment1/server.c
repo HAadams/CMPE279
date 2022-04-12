@@ -65,6 +65,7 @@ int main(int argc, char const *argv[])
     // child process
     if(pid == 0) {
 
+        setgid(getpwnam("nobody")->pw_gid);
         setuid(getpwnam("nobody")->pw_uid);
 
         valread = read( new_socket , buffer, 1024);

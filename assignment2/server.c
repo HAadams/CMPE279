@@ -74,16 +74,14 @@ void setup_socket(int argc, char const *argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    //int cc = new_socket;
-    char new_socket_str [20];
-    sprintf(new_socket_str, "%d", new_socket);
-
-
     // create a child process to handle communications with client
     pid_t pid = fork();
     int status;
     // child process
     if(pid == 0) {
+
+        char new_socket_str [20]; // large enough buffer to fit a 32 bit int
+        sprintf(new_socket_str, "%d", new_socket);
 
         char *child_args[4];
 
@@ -113,7 +111,8 @@ void client_listener(int new_socket) {
     char *hello = "Hello from server";
     char buffer[102] = {0};
 
-    chroot('/tmp');
+    chroot(getpwnam("nobody")->pw_dir);
+    setgid(getpwnam("nobody")->pw_gid);
     setuid(getpwnam("nobody")->pw_uid);
 
     valread = read( new_socket , buffer, 1024);
