@@ -9,7 +9,7 @@
 #include <string.h>
 #include <pwd.h>
 
-#define PORT 8080
+#define PORT 80
 void setup_socket(int argc, char const *argv[]);
 void client_listener(int new_socket);
 
